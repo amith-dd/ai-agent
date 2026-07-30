@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.mypersonalassist</string>
+
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/java</string>
+		<string>-jar</string>
+		<string>/Users/amit/Eclipse STS workspace/mypersonalassist/target/mypersonalassist-0.0.1-SNAPSHOT.jar</string>
+	</array>
+
+	<key>WorkingDirectory</key>
+	<string>/Users/amit/Eclipse STS workspace/mypersonalassist</string>
+
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>SERVER_PORT</key>
+		<string>8080</string>
+		<key>OLLAMA_BASE_URL</key>
+		<string>http://localhost:11434</string>
+		<key>MYSQL_URL</key>
+		<string>jdbc:mysql://localhost:3306/mypersonalassist?createDatabaseIfNotExist=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</string>
+		<key>MYSQL_USER</key>
+		<string>mypa</string>
+		<key>MYSQL_PASSWORD</key>
+		<string>mypa</string>
+		<key>QDRANT_HOST</key>
+		<string>localhost</string>
+	</dict>
+
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+
+	<key>StandardOutPath</key>
+	<string>/tmp/mypersonalassist.out.log</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/mypersonalassist.err.log</string>
+</dict>
+</plist>

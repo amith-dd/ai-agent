@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${pageTitle}">Personal Assistant</title>
+	<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" aria-label="Assistant navigation">
+			<div class="brand">
+				<div class="brand-mark">PA</div>
+				<div>
+					<div class="brand-name">Personal Assistant</div>
+					<div class="brand-meta">Local Llama</div>
+				</div>
+			</div>
+
+			<nav class="nav-list" aria-label="Sections">
+				<a class="nav-item active" href="/chat">
+					<span class="nav-icon">C</span>
+					<span>Chat</span>
+				</a>
+				<button class="nav-item" type="button" disabled>
+					<span class="nav-icon">V</span>
+					<span>Voice</span>
+				</button>
+				<button class="nav-item" type="button">
+					<span class="nav-icon">F</span>
+					<span>Files</span>
+				</button>
+				<button class="nav-item" type="button" disabled>
+					<span class="nav-icon">A</span>
+					<span>Apps</span>
+				</button>
+				<button class="nav-item" type="button" disabled>
+					<span class="nav-icon">S</span>
+					<span>Settings</span>
+				</button>
+			</nav>
+
+			<section class="history-panel" aria-labelledby="history-title">
+				<div class="history-heading">
+					<h2 id="history-title">Conversations</h2>
+					<button id="refreshConversations" class="mini-button" type="button" aria-label="Refresh conversations">Refresh</button>
+				</div>
+				<div id="conversationList" class="conversation-list"></div>
+			</section>
+
+			<section class="file-panel" aria-labelledby="files-title">
+				<div class="history-heading">
+					<h2 id="files-title">Files</h2>
+				</div>
+				<form id="fileForm" class="file-form">
+					<label class="file-picker" for="fileInput">Add text files</label>
+					<input id="fileInput" class="sr-only" type="file" name="files" accept=".txt,.md,.markdown,text/plain,text/markdown" multiple>
+					<button id="submitFiles" class="mini-button" type="submit" disabled>Submit</button>
+				</form>
+				<div id="fileStatusList" class="file-status-list" aria-live="polite"></div>
+			</section>
+		</aside>
+
+		<main class="chat-main">
+			<header class="chat-header">
+				<div>
+					<p class="eyebrow">Local model</p>
+					<h1>Chat</h1>
+				</div>
+				<div class="status-pill" id="modelStatus">Ollama</div>
+			</header>
+
+			<section class="chat-panel" aria-label="Chat conversation">
+				<div id="emptyState" class="empty-state">
+					<div class="empty-title">Start today&apos;s conversation</div>
+					<div class="empty-copy">Ask a question and Llama will answer locally.</div>
+				</div>
+				<div id="messages" class="messages" aria-live="polite"></div>
+			</section>
+
+			<form id="chatForm" class="composer" autocomplete="off">
+				<label class="sr-only" for="messageInput">Message</label>
+				<textarea id="messageInput" name="message" rows="2" maxlength="12000" placeholder="Type your message"></textarea>
+				<button id="sendButton" class="send-button" type="submit">Send</button>
+			</form>
+			<div id="toast" class="toast" role="status" aria-live="polite"></div>
+		</main>
+	</div>
+
+	<script src="/js/chat.js"></script>
+</body>
+</html>
