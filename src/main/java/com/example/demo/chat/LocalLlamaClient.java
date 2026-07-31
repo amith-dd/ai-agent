@@ -27,7 +27,7 @@ public class LocalLlamaClient {
     private final Assistant assistant;
 
     interface Assistant {
-        Result<AiMessage> chat(List<ChatMessage> messages);
+        Result<String> chat(List<ChatMessage> messages);
     }
 
 	public LocalLlamaClient(LocalLlamaProperties properties, WebSearchTool webSearchTool) {
@@ -47,12 +47,11 @@ public class LocalLlamaClient {
 
 	public LlamaReply generateReply(List<StoredChatMessage> recentMessages) {
 		try {
-			Result<AiMessage> response = assistant.chat(toLangChainMessages(recentMessages));
-			String content = response.content() == null ? "" : response.content().text();
+			Result<String> response = assistant.chat(toLangChainMessages(recentMessages));
+			String content = response.content();
 			if (content == null || content.isBlank()) {
 				content = "I did not receive a response from the local Llama model.";
 			}
-			// AiServices Result doesn't expose modelName directly in the same way, but it does have metadata or we can fallback to configured
 			String modelName = configuredModelName;
 			return new LlamaReply(content.trim(), modelName);
 		}

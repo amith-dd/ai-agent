@@ -8,6 +8,7 @@ import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.http.client.jdk.JdkHttpClientBuilder;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
+import dev.langchain4j.model.googleai.GoogleAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.env.Environment;
 
 @Service
 public class RagService {
@@ -37,16 +39,22 @@ public class RagService {
 
 	private final RagProperties ragProperties;
 	private final QdrantProperties qdrantProperties;
-	private final OllamaEmbeddingProperties embeddingProperties;
+	private final OllamaEmbeddingProperties ollamaProperties;
+    private final GeminiEmbeddingProperties geminiProperties;
 	private final HttpClient httpClient;
+    private final Environment env;
 
 	public RagService(
 			RagProperties ragProperties,
 			QdrantProperties qdrantProperties,
-			OllamaEmbeddingProperties embeddingProperties) {
+			OllamaEmbeddingProperties ollamaProperties,
+            GeminiEmbeddingProperties geminiProperties,
+            Environment env) {
 		this.ragProperties = ragProperties;
 		this.qdrantProperties = qdrantProperties;
-		this.embeddingProperties = embeddingProperties;
+		this.ollamaProperties = ollamaProperties;
+        this.geminiProperties = geminiProperties;
+        this.env = env;
 		this.httpClient = HttpClient.newHttpClient();
 	}
 
@@ -116,12 +124,23 @@ public class RagService {
 	}
 
 	private EmbeddingModel embeddingModel() {
+        String provider = env.getProperty("assistant.llm.cloud.provider", "gemini");
+        String geminiApiKey = env.getProperty("GEMINI_AI_KEY");
+
+        if ("gemini".equalsIgnoreCase(provider) && StringUtils.hasText(geminiApiKey)) {
+            return GoogleAiEmbeddingModel.builder()
+                    .apiKey(geminiApiKey)
+                    .modelName(geminiProperties.getEmbeddingModel())
+                    .outputDimensionality(geminiProperties.getEmbeddingOutputDimensions())
+                    .build();
+        }
+
 		return OllamaEmbeddingModel.builder()
 				.httpClientBuilder(new JdkHttpClientBuilder())
-				.baseUrl(embeddingProperties.baseUrl())
-				.modelName(embeddingProperties.modelName())
-				.timeout(embeddingProperties.timeout())
-				.dimensions(qdrantProperties.embeddingDimensions())
+				.baseUrl(ollamaProperties.baseUrl())
+				.modelName(ollamaProperties.modelName())
+				.timeout(ollamaProperties.timeout())
+				//.dimensions(qdrantProperties.embeddingDimensions()) // Removed because of compatibility issues across langchain4j ollama versions
 				.build();
 	}
 
