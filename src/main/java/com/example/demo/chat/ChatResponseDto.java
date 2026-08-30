@@ -6,5 +6,6 @@ public record ChatResponseDto(
 		ConversationSummaryDto conversation,
 		ChatMessageDto userMessage,
 		ChatMessageDto assistantMessage,
-		List<ConversationSummaryDto> conversations) {
+		List<ConversationSummaryDto> conversations,
+		List<String> citedFiles) {
 }
