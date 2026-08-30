@@ -6,8 +6,9 @@ import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.http.client.jdk.JdkHttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.Result;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,13 @@ public class LocalLlamaClient {
 
 	private final ChatModel chatModel;
 	private final String configuredModelName;
+    private final Assistant assistant;
 
-	public LocalLlamaClient(LocalLlamaProperties properties) {
+    interface Assistant {
+        Result<String> chat(List<ChatMessage> messages);
+    }
+
+	public LocalLlamaClient(LocalLlamaProperties properties, WebSearchTool webSearchTool) {
 		this.configuredModelName = properties.modelName();
 		this.chatModel = OllamaChatModel.builder()
 				.httpClientBuilder(new JdkHttpClientBuilder())
@@ -33,16 +39,20 @@ public class LocalLlamaClient {
 				.temperature(properties.temperature())
 				.timeout(properties.timeout())
 				.build();
+        this.assistant = AiServices.builder(Assistant.class)
+                .chatModel(this.chatModel)
+                .tools(webSearchTool)
+                .build();
 	}
 
 	public LlamaReply generateReply(List<StoredChatMessage> recentMessages) {
 		try {
-			ChatResponse response = chatModel.chat(toLangChainMessages(recentMessages));
-			String content = response.aiMessage() == null ? "" : response.aiMessage().text();
+			Result<String> response = assistant.chat(toLangChainMessages(recentMessages));
+			String content = response.content();
 			if (content == null || content.isBlank()) {
 				content = "I did not receive a response from the local Llama model.";
 			}
-			String modelName = response.modelName() == null ? configuredModelName : response.modelName();
+			String modelName = configuredModelName;
 			return new LlamaReply(content.trim(), modelName);
 		}
 		catch (RuntimeException ex) {

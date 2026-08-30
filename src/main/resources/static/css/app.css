@@ -1,16 +1,16 @@
 :root {
-	--bg: #eef1f4;
-	--panel: #ffffff;
+	--bg: #ffffff;
+	--panel: #f7f8fa;
 	--sidebar: #20242b;
 	--sidebar-muted: #aeb7c2;
-	--text: #20242b;
-	--muted: #687382;
+	--text: #000000;
+	--muted: #4a5568;
 	--line: #d8dee6;
 	--green: #2f7d54;
 	--green-dark: #24603f;
 	--amber: #a16018;
-	--user-bg: #e5f1ea;
-	--assistant-bg: #f7f8fa;
+	--user-bg: #d1f2eb;
+	--assistant-bg: #edf2f7;
 	--shadow: 0 12px 30px rgba(31, 40, 51, 0.10);
 }
 
